@@ -133,11 +133,6 @@ app.put('/api/contacts/:id', (req, res) => {
  * /api/contacts/{contactId}:
  *  delete:
  *    description: Deletes a new contact
- *    operationId: "deleteContact"
- *    consumes:
- *     - "application/json"
- *    produces:
- *     - application/json
  *    parameters:
  *     - in: "path"
  *       name: "contactId"
