@@ -40,7 +40,6 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/static'));
 
@@ -56,7 +55,7 @@ app.use(express.static(__dirname + '/static'));
  */
 app.get('/api/contacts', (req, res) => {
   return db.Contact.findAll()
-    .then((contacts) => res.send(contacts))
+    .then((contacts) => res.send( {"success": true, "data": { "contacts": contacts } }))
     .catch((err) => {
       console.log('There was an error querying contacts', JSON.stringify(err))
       return res.send(err)
@@ -102,9 +101,10 @@ app.get('/api/contacts', (req, res) => {
  *          example: "1234512345"  
  */
 app.post('/api/contacts', (req, res) => {
+
   const { firstName, lastName, phone } = req.body
   return db.Contact.create({ firstName, lastName, phone })
-    .then((contact) => res.send(contact))
+    .then((contact) => res.send( { "success": true, "contacts": contact } ))
     .catch((err) => {
       console.log('***There was an error creating a contact', JSON.stringify(contact))
       return res.status(400).send(err)
@@ -118,7 +118,7 @@ app.put('/api/contacts/:id', (req, res) => {
   .then((contact) => {
     const { firstName, lastName, phone } = req.body
     return contact.update({ firstName, lastName, phone })
-      .then(() => res.send(contact))
+      .then(() => res.send({ "success": true, "contacts": contact}))
       .catch((err) => {
         console.log('***Error updating contact', JSON.stringify(err))
         res.status(400).send(err)
@@ -149,10 +149,11 @@ app.delete('/api/contacts/:id', (req, res) => {
   const id = parseInt(req.params.id)
   return db.Contact.findById(id)
     .then((contact) => contact.destroy({ force: true }))
-    .then(() => res.send({ id }))
+    .then(() => res.send({ "success": true, id, "msg": "Contact Deleted successfully" }))
     .catch((err) => {
       console.log('***Error deleting contact', JSON.stringify(err))
-      res.status(400).send(err)
+      let error = { "success": false, "msg": "given id does not exists"}
+      res.status(400).send(error)
     })
 });
 
